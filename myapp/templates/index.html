@@ -1,0 +1,451 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Student Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+<!-- choosen css -->
+        <link rel="stylesheet" type="text/css" href="{% static 'css/chosen.css' %}">
+
+        
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+       
+.chosen-container{
+    width: 100% !important;
+    font-family: 'Poppins', sans-serif;
+   
+}
+.chosen-container-multi .chosen-choices{
+    height: 37px !important;
+    border-radius: .375rem !important;
+    
+}
+
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5 p-2 rounded shadow bg-white">
+        
+        <a href="{% url 'loginpage' %}" class="btn btn-primary">Logout</a>
+ 
+        {% if messages %}
+        {% for message in messages %}
+        <div class="mb-3 alert alert-success text-center">
+            {{message}}
+        </div>
+        {% endfor %}
+        {% endif %}
+        <div class="d-flex mb-3 justify-content-between align-items-center">
+            <a href="" data-bs-toggle="modal" data-bs-target="#addnewstudentModal"
+                class="btn btn-primary px-3 btn-sm">Add new student</a>
+
+                <form action="{% url 'chart' %}"  method="post" class="d-flex">
+                    {% csrf_token %}
+                    <button class="btn btn-success btn-sm px-3 mx-2" name="charts">Charts</button>
+            </form>
+            
+            <div class="">
+            <form action="{% url 'name'%}" method="post" class="d-flex">
+                {% csrf_token %}
+                <input type="search" value="{{namequery}}" name="namesearchquery" class="form-control"
+                    placeholder="SearchByName..." value="{{search_query}}">
+                <button class="btn btn-success btn-sm px-3 mx-2" name="namesearch">Search</button>
+            </form>
+            <br>
+            <form method="post" class="d-flex">
+                {% csrf_token %}
+                <input type="search" value="{{dobquery}}" name="dobsearchquery" class="form-control"
+                    placeholder="SearchByDob..." value="{{search_query}}">
+                <button class="btn btn-success btn-sm px-3 mx-2" name="dobsearch">Search</button>
+            </form>
+        </div>
+
+            <div class="">
+                <form method="post" class="d-flex">
+                    {% csrf_token %}
+                    <input type="search" value="{{emailquery}}" name="emailsearchquery" class="form-control"
+                        placeholder="SearchByEmail...." value="{{search_query}}">
+                    <button class="btn btn-success btn-sm px-3 mx-2" name="emailsearch">Search</button>
+                </form>
+                <br>
+                <form method="post" class="d-flex">
+                    {% csrf_token %}
+                    <input type="search" value="{{query}}" name="searchquery" class="form-control"
+                        placeholder="search..." value="{{search_query}}">
+                    <button class="btn btn-success btn-sm px-3 mx-2" name="search">Search</button>
+                </form>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Full Name</th>
+                    <th scope="col">Date of Birth</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Age</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">State</th>
+                    <th scope="col">City</th>
+                    <th scope="col">Qualification</th>
+                    <th scope="col">Subject</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <th>{{ forloop.counter }}</th>
+                    <td>{{student.Fullname}}</td>
+                    <td>{{student.DOB}}</td>
+                    <td>{{student.Email}}</td>
+                    <td>{{student.Age}}</td>
+                    <td>{{student.Gender}}</td>
+                    <td>{{student.Country}}</td>
+                    <td>{{student.State}}</td>
+                    <td>{{student.City}}</td>
+                    <td>{{student.Qualification}}</td>
+                    <td>{{student.Subject}}</td>
+                    <td>
+                        <a href="" data-bs-toggle="modal" data-bs-target="#updatestudentModal_{{student.id}}"
+                            class="btn btn-sm btn-success"><i class="fa-regular fa-pen-to-square"></i></a>
+                        <a href="" data-bs-toggle="modal" data-bs-target="#deletestudentModal_{{student.id}}"
+                            class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i></a>
+                    </td>
+                </tr>
+
+                
+
+
+
+                <!-- update student modal -->
+                <div class="modal fade" id="updatestudentModal_{{student.id}}" tabindex="-1"
+                    aria-labelledby="updatestudentModal_{{student.id}}Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="updatestudentModal_{{student.id}}Label">Add new
+                                        student</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="id" value="{{student.id}}">
+                                    <div class="">
+                                        <label for="name">Full Name</label>
+                                        <input required type="text" value="{{student.Fullname}}" name="name"
+                                            class="form-control">
+                                    </div>
+                                    <div class="mt-3">
+                                        <label for="DOB">Date Of Birth</label>
+                                        <input type="date" name="dob"  value="{{student.DOB|date:"Y-m-d" }}"
+                                            class="form-control">
+                                    </div>
+                                    <div class="mt-3">
+                                        <label for="email">Email</label>
+                                        <input required type="email" value="{{student.Email}}" name="email"
+                                            class="form-control">
+                                    </div>
+                                    <div class="mt-3">
+                                        <label for="contact">Age</label>
+                                        <input required type="number" value="{{student.Age}}" name="Age"
+                                            class="form-control">
+                                    </div>
+                                    <div class="mt-3">
+                                        <label for="gender">Gender</label>
+                                        <select id="gender" value="{{student.Gender}}" name="gender" class="form-select"
+                                            required>
+                                            <option value="">Select Gender</option>
+                                            <option value="male" {% if student.Gender == "male" %} selected {% else %} "" {% endif %}>Male</option>
+                                            <option value="female" {% if student.Gender == "female" %} selected {% else %} "" {% endif %}>Female</option>
+                                            <option value="other"{% if student.Gender == "other" %} selected {% else %} "" {% endif %}>Other</option>
+                                        </select>
+                                    </div>
+
+                                    
+                                    <div class="mt-3">
+                                        <label for="country">Country</label>
+                                        <input required type="country" value="{{student.Country}}" name="country"
+                                            class="form-control">
+                                    </div>
+                                    <div class="mt-3">
+                                        <label for="state">State</label>
+                                        <input required type="state" value="{{student.State}}" name="state"
+                                            class="form-control">
+                                    </div>
+                                    <div class="mt-3">
+                                        <label for="city">City</label>
+                                        <input required type="City" value="{{student.City}}" name="city"
+                                            class="form-control">
+                                    </div>
+                            
+                                    
+                                    <div class="mt-3">
+                                        <label class="control-label">Qualification</label>
+                                        <div class="controls">
+                                            <label class="radio inline">
+                                                <input type="radio" name="qualification" value="BE" {% if student.Qualification == "BE" %} checked {% else %} "" {% endif %} />
+                                                BE
+                                            </label>
+                                            <label class="mx-2">
+                                                <input type="radio" name="qualification" value="BCA" {% if student.Qualification == "BCA" %} checked {% else %} "" {% endif %} />
+                                                BCA
+                                            </label>
+                                            <label class="mx-2">
+                                                <input type="radio" name="qualification" value=" MCA" {% if student.Qualification == "MCA" %} checked {% else %} "" {% endif %} />
+                                                MCA
+                                            </label>
+                                            <label class="mx-2">
+                                                <input type="radio" name="qualification" value="BA" {% if student.Qualification == "BA" %} checked {% else %} "" {% endif %} />
+                                                BA
+                                            </label>
+                                            <label class="mx-2">
+                                                <input type="radio" name="qualification" value="B.Com" {% if student.Qualification == "B.Com" %} checked {% else %} "" {% endif %}/>
+                                                B.Com
+                                            </label>
+                                            <label class="mx-2">
+                                                <input type="radio" name="qualification" value="B.Sc" {% if student.Qualification == "B.Sc" %} checked {% else %} "" {% endif %}/>
+                                                B.Sc
+                                            </label>
+                                        </div>   
+                                    </div>
+                                    <div class="mt-3">
+                                        <label for="subject">Subject</label>
+        
+                                        <select id="subject" name="subject" class="form-select chosen_new" required multiple>
+                                            <option value="physics" >Physics</option>
+                                            <option value="chemistry">Chemistry</option>
+                                            <option value="maths">Maths</option>
+                                            <option value="biology">Biology</option>
+                                        </select>
+        
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" name="update">Update student</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- delete student modal -->
+                <div class="modal fade" id="deletestudentModal_{{student.id}}" data-bs-backdrop="static"
+                    data-bs-keyboard="false" tabindex="-1" aria-labelledby="deletestudentModal_{{student.id}}Label"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{student.id}}">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <p>Are you sure? you want to delete</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-danger" name="delete">Delete student</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}  
+            </tbody>
+        </table>
+
+        <nav aria-label="Page navigation example">
+    {% if students.has_other_pages %}
+    <ul class="pagination">
+   {% if students.has_previous %}
+     <li class="page-item page-item"><a class="page-link" href="?page={{ students.previous_page_number }}">Previous</a></li>
+   {% else %}
+     <li class="disabled page-item"><a class="page-link">Previous</a></li>
+   {% endif %}
+   {% for i in students.paginator.page_range %}
+     {% if students.number == i %}
+    <li class="active page-item"><a class="page-link">{{ i }} <a class="sr-only">(current)</a></a></li>
+     {% else %}
+    <li class="page-item page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+     {% endif %}
+   {% endfor %}
+   {% if students.has_next %}
+     <li class="page-item"><a class="page-link" href="?page={{ students.next_page_number }}">Next</a></li>
+   {% else %}
+     <li class="disabled page-item"><a class="page-link">Next</a></li>
+   {% endif %}
+    </ul>
+  {% endif %}
+</nav>
+        </div>
+
+
+        
+
+
+    <!-- add new student modal -->
+    <div class="modal fade" id="addnewstudentModal" tabindex="-1" aria-labelledby="addnewstudentModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="addnewstudentModalLabel">Add new student</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="">
+                            <label for="name">Full Name</label>
+                            <input required type="text" name="name" class="form-control">
+                        </div>
+                        <div class="mt-3">
+                            <label for="DOB">Date Of Birth</label>
+                            <input required type="date" name="dob" class="form-control">
+                        </div>
+                        <div class="mt-3">
+                            <label for="email">Email</label>
+                            <input required type="email" name="email" class="form-control">
+                        </div>
+                        <div class="mt-3">
+                            <label for="contact">Age</label>
+                            <input required type="number" name="Age" class="form-control">
+                        </div>
+                        <div class="mt-3">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender" class="form-select" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+
+                        <div class="mt-3">
+                        <label for="country">Country</label>
+                        <select name="country" class="countries form-control" id="countryId">
+                            <option value="">Select Country</option>
+                        </select>
+                    </div>
+                        <div class="mt-3">
+                            <label for="state">State</label>
+                            <select name="state" class="states form-control" id="stateId">
+                                <option value="">Select State</option>
+                            </select>
+                    </div>
+                        <div class="mt-3">
+                            <label for="city">City</label>
+                            <select name="city" class="cities form-control" id="cityId">
+                                <option value="">Select City</option>
+                            </select>
+                    </div>
+                        
+                        <div class="mt-3">
+                            <label class="control-label">Qualification</label>
+                            <div class="controls">
+                                <label class="radio inline">
+                                    <input type="radio" name="qualification" value="BE" required />
+                                    BE
+                                </label>
+                                <label class="mx-2">
+                                    <input type="radio" name="qualification" value="BCA" required/>
+                                    BCA
+                                </label>
+                                <label class="mx-2">
+                                    <input type="radio" name="qualification" value=" MCA" required/>
+                                    MCA
+                                </label>
+                                <label class="mx-2">
+                                    <input type="radio" name="qualification" value="BA" required/>
+                                    BA
+                                </label>
+                                <label class="mx-2">
+                                    <input type="radio" name="qualification" value="B.Com" required/>
+                                    B.Com
+                                </label>
+                                <label class="mx-2">
+                                    <input type="radio" name="qualification" value="B.Sc" required />
+                                    B.Sc
+                                </label>
+                            </div>
+                        
+                            <div class="mt-3">
+                                <label for="subject">Subject</label>
+
+                                <select id="subject" name="subject" class="form-select chosen_new" required multiple>
+                                    <option value="physics">Physics</option>
+                                    <option value="chemistry">Chemistry</option>
+                                    <option value="maths">Maths</option>
+                                    <option value="biology">Biology</option>
+                                </select>
+
+                            </div>
+                    </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" name="add">Add new student</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+<!-- choosen jquery.js -->
+<script src="{% static 'js/jquery.js' %}"></script>
+
+<!-- state,country,city js file  -->
+<script src="{% static 'js/app.js' %}"></script>
+
+
+<!-- main page script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+
+       
+        <!-- choosen jquery -->
+        <script src="{% static 'js/chosen.jquery.js' %}"></script>
+        
+        <script>
+            $(document).ready(function() {
+                $(".chosen_new").chosen();
+                $('#subject').change(function() {
+                    var selectedOptions = $('#subject option:selected');
+                    var selectedList = $('#selected-options ul');
+                    selectedList.empty();
+                    selectedOptions.each(function() {
+                        selectedList.append('<li>' + $(this).text() + '</li>');
+                    });
+                });
+            });
+            </script>
+
+
+</body>
+
+</html>

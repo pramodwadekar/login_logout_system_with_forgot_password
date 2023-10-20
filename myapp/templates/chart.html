@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charts</title>
+</head>
+<body>
+
+    <div id="container" style="width: 30%;">
+
+        <h1>Pie chart</h1>
+        <canvas id="pie-chart"></canvas>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <script>
+        var ctx = document.getElementById('pie-chart').getContext('2d');
+        var chartData = {{ chart_data|safe }}; // Retrieve chart data from your view
+    
+        var data = {
+            datasets: [{
+                data: chartData.data, // Use the age data from the database
+                backgroundColor: ['red', 'orange', 'blue', 'yellow', 'green','black', 'pink','aqua', 'cyan' ,'jade','violet','beige','gold','silver'],
+                label: 'Age',
+            }],
+            labels: chartData.labels, // Use the names from the database
+        };
+    
+        var config = {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: true,
+            },
+        };
+    
+        var myPieChart = new Chart(ctx, config);
+    </script>
+
+
+<!-- bar chart -->
+<div id="container" style="width: 30%;">
+    <h1>Bar Chart</h1>
+    <canvas id="bar-chart"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('bar-chart').getContext('2d');
+    var chartData = {{ chart_data|safe }}; // Retrieve chart data from your view
+
+    var data = {
+        labels: chartData.labels, // Use the names from the database
+        datasets: [{
+            data: chartData.data, // Use the data from the database
+            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Specify the bar color
+            borderColor: 'rgba(75, 192, 192, 1)', // Specify the border color
+            borderWidth: 1, // Specify the border width
+            label: 'Age',
+        }],
+    };
+
+    var config = {
+        type: 'bar', // Specify the chart type as a bar chart
+        data: data,
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: true
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
+        },
+    };
+
+    var myBarChart = new Chart(ctx, config);
+</script>
+
+<!--line chart-->
+<div id="container" style="width: 30%;">
+    <h1>Line Chart</h1>
+    <canvas id="line-chart"></canvas>
+</div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<script>
+    var ctx = document.getElementById('line-chart').getContext('2d');
+    var chartData = {{ chart_data|safe }}; // Retrieve chart data from your view
+
+    var data = {
+        labels: chartData.labels, // Use the labels for the X-axis from your data
+        datasets: [{
+            label: 'Age',
+            data: chartData.data, // Use the data for the Y-axis from your data
+            borderColor: 'blue', // Line color
+            borderWidth: 2, // Line width
+            fill: false, // Don't fill the area under the line
+        }],
+    };
+
+    var config = {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+        },
+    };
+
+    var myLineChart = new Chart(ctx, config);
+</script>
+
+</div>
+</body>
+</html>
+
+    
+    
+
